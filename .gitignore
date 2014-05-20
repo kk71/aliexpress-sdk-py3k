@@ -54,3 +54,6 @@ docs/_build/
 
 # pycharm dir
 .idea
+
+# ignore test scripts
+test.py
