@@ -18,8 +18,8 @@ except:import json
 
 def _aop_signature(appsecret,sig_url=None,**kwargs):
     '''
-字典序排序并生成aop签名
-'''
+    字典序排序并生成aop签名
+    '''
     #先将字典转换成序列，用序列自带的sort作排序。
     a=[(s,kwargs[s]) for s in kwargs]
     a.sort()
@@ -40,17 +40,17 @@ def _aop_signature(appsecret,sig_url=None,**kwargs):
 
 def _aop_timestamp():
     '''
-时间戳
-'''
+    时间戳
+    '''
     return int(datetime.now().timestamp()*1000)
 
 
 def genAuthUri(appkey,appsecret,redirect_uri,state=""):
     '''
-生成用户认证的url
-NOTE:
-appkey:same as client_id
-'''
+    生成用户认证的url
+    NOTE:
+    appkey:same as client_id
+    '''
     auth_uri="http://gw.api.alibaba.com/auth/authorize.htm?" \
              "site=aliexpress&" \
              "client_id=%s&" \
@@ -66,8 +66,8 @@ appkey:same as client_id
 
 def getToken(appkey,appsecret,redirect_uri,code):
     '''
-用户认证之后，根据获得的临时令牌“code”，获取refreshtoken和accesstoken。
-'''
+    用户认证之后，根据获得的临时令牌“code”，获取refreshtoken和accesstoken。
+    '''
     get_token_uri="https://gw.api.alibaba.com/openapi/http/1/system.oauth2/getToken/" \
                   "%s?" \
                   "grant_type=authorization_code&" \
@@ -84,8 +84,8 @@ def getToken(appkey,appsecret,redirect_uri,code):
 
 def refreshAccesstoken(appkey,appsecret,refresh_token):
     '''
-用refreshtoken去更新accesstoken。
-'''
+    用refreshtoken去更新accesstoken。
+    '''
     get_token_uri="https://gw.api.alibaba.com/openapi/http/1/system.oauth2/getToken/" \
                   "%s?" \
                   "grant_type=refresh_token&" \
@@ -100,12 +100,12 @@ def refreshAccesstoken(appkey,appsecret,refresh_token):
 
 def postponeToken(appkey,appsecret,refresh_token,access_token):
     '''
-换取新的refreshtoken。
-注意：
-如果当前时间离refreshToken过期时间在30天以内，
-那么可以调用postponeToken接口换取新的refreshToken；
-否则会报错（400，bad request）。详情参见开放平台文档
-'''
+    换取新的refreshtoken。
+    注意：
+    如果当前时间离refreshToken过期时间在30天以内，
+    那么可以调用postponeToken接口换取新的refreshToken；
+    否则会报错（400，bad request）。详情参见开放平台文档
+    '''
     get_token_uri="https://gw.api.alibaba.com/openapi/param2/1/system.oauth2/postponeToken/" \
                   "%s?" \
                   "client_id=%s&" \
@@ -120,8 +120,8 @@ def postponeToken(appkey,appsecret,refresh_token,access_token):
 class aliexp_api_frame:
     def _api_uri_gen(self,base_uri,appkey,dic):
         '''
-    产生标准的api uri.
-    '''
+        产生标准的api uri.
+        '''
         if base_uri[-1]!="/":
             base_uri+="/"
         return base_uri+appkey+"?"+parse.urlencode(dic)
@@ -133,11 +133,12 @@ class aliexp_api_frame:
                  with_time=False,
                  **kwargs):
         '''
-    使用方式：
-    appkey必填，如果给出appsecret，则将自动计算_aop_signature。
-    with_time若为True，则将附上_aop_timestamp
-    应用级参数都放入kwargs中，注意大多数api需要access_token，故不应忘记。
-    '''
+        使用方式：
+        appkey必填。
+        如果给出appsecret，则将自动计算_aop_signature。
+        with_time若为True，则将附上_aop_timestamp
+        应用级参数都放入kwargs中，注意大多数api需要access_token，故不应忘记。
+        '''
         if with_time:
             #必须先判断是否要加入时间戳。
             #因为签名因子制作的时候需要加入时间戳
@@ -160,11 +161,12 @@ class aliexp_api_frame:
 
     def query(self):
         '''
-    执行查询
-    '''
+        执行查询
+        '''
         return json.loads(request.urlopen(self.api_uri).read().decode("utf-8"))
 
 
+#api对应的子类。注意，注释掉的类表示未测试过。
 #交易
 class findOrderTradeInfo(aliexp_api_frame):pass
 #class findOrderBuyerInfo(aliexp_api_frame):pass
@@ -176,3 +178,42 @@ class findOrderListSimpleQuery(aliexp_api_frame):pass
 #class findLoanListQuery(aliexp_api_frame):pass
 class findOrderById(aliexp_api_frame):pass
 class findOrderListQuery(aliexp_api_frame):pass
+
+#物流模板
+class listFreightTemplate(aliexp_api_frame):pass
+#class calculateFreight(aliexp_api_frame):pass
+class getFreightSettingByTemplateQuery(aliexp_api_frame):pass
+
+#产品
+#class getWindowProducts(aliexp_api_frame):pass
+#class editProductCategoryAttributes(aliexp_api_frame):pass
+#class setGroups(aliexp_api_frame):pass
+#class queryProductGroupIdByProductId(aliexp_api_frame):pass
+#class getProductGroupList(aliexp_api_frame):pass
+#class editProductCidAttIdSku(aliexp_api_frame):pass
+#class editSimpleProductFiled(aliexp_api_frame):pass
+#class getAtributeMissingProductList(aliexp_api_frame):pass
+#class claimTaobaoProducts4API(aliexp_api_frame):pass
+#class offShopwindowProduct(aliexp_api_frame):pass
+#class setShopwindowProduct(aliexp_api_frame):pass
+#class queryPromiseTemplateById(aliexp_api_frame):pass
+#class listTbProductByIds(aliexp_api_frame):pass
+#class findAeProductDetailModuleListByQurey(aliexp_api_frame):pass
+#class findAeProductModuleById(aliexp_api_frame):pass
+class onlineAeProduct(aliexp_api_frame):pass
+class offlineAeProduct(aliexp_api_frame):pass
+#class editAeProduct(aliexp_api_frame):pass
+class findAeProductById(aliexp_api_frame):pass
+class findProductInfoListQuery(aliexp_api_frame):pass
+#class postAeProduct(aliexp_api_frame):pass
+
+#物流
+#class sellerModifiedShipment(aliexp_api_frame):pass
+#class getOnlineLogisticsInfo(aliexp_api_frame):pass
+#class getPrintInfo(aliexp_api_frame):pass
+#class getOnlineLogisticsServiceListByOrderId(aliexp_api_frame):pass
+#class createWarehouseOrder(aliexp_api_frame):pass
+#class qureyWlbDomesticLogisticsCompany(aliexp_api_frame):pass
+class listLogisticsService(aliexp_api_frame):pass
+class sellerShipment(aliexp_api_frame):pass
+class queryTrackingResult(aliexp_api_frame):pass
