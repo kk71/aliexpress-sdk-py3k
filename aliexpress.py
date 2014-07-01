@@ -29,7 +29,6 @@ def _aop_signature(appsecret,sig_url=None,**kwargs):
         #api signature
         #part of url is needed
         result=sig_url+result
-    print(result)
     signature=hmac.new(
         appsecret.encode("utf-8"),
         result.encode("utf-8"),
